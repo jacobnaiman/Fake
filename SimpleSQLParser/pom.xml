@@ -4,7 +4,7 @@
 
   <groupId>edu.yu.cs.ds.fall2016</groupId>
   <artifactId>SimpleSQLParser</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
 
   <name>SimpleSQLParser</name>
