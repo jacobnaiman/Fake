@@ -1,5 +1,9 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
-
+/**
+ * describes a column specified in a CREATE TABLE query
+ * @author diament@yu.edu
+ *
+ */
 public class ColumnDescription implements Comparable<ColumnDescription>
 {
     public enum DataType{INT,VARCHAR,DECIMAL,BOOLEAN};
@@ -70,7 +74,7 @@ public class ColumnDescription implements Comparable<ColumnDescription>
     
     /**
      * 
-     * @return default value represented as a string
+     * @return default value represented as a string, if there is one
      */
     public String getDefaultValue()
     {
@@ -106,8 +110,7 @@ public class ColumnDescription implements Comparable<ColumnDescription>
     {
 	this.fractionalLength = length;
     }
-    
-    
+        
     /**
      * for a varchar column, how many characters long is it
      * @return

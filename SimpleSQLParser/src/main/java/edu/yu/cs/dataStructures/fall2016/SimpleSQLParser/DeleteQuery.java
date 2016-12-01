@@ -1,11 +1,15 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
-
+/**
+ * represents a DELETE query
+ * @author diament@yu.edu
+ *
+ */
 public class DeleteQuery extends SQLQuery
 {
     private String tableName;
     private Condition where;
     
-    public DeleteQuery(String queryString)
+    DeleteQuery(String queryString)
     {
 	super(queryString);
     }
@@ -23,7 +27,7 @@ public class DeleteQuery extends SQLQuery
     }
     
     /**
-     * @return the where
+     * @return the "WHERE" condition which dictates which rows will be delete
      */
     public Condition getWhereCondition()
     {
@@ -33,10 +37,18 @@ public class DeleteQuery extends SQLQuery
     {
 	this.where = where;
     }
+    /**
+     * not relevant to DELETE queries
+     * @throws UnsupportedOperationException
+     */    
     public ColumnValuePair[] getColumnValuePairs()
     {
 	throw new UnsupportedOperationException();
     }
+    /**
+     * not relevant to DELETE queries
+     * @throws UnsupportedOperationException
+     */    
     void addColumnValuePair(ColumnID col, String value)
     {
 	throw new UnsupportedOperationException();	

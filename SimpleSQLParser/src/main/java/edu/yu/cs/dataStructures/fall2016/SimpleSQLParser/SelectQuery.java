@@ -3,8 +3,17 @@ package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * represents a SELECT query
+ * @author diament@yu.edu
+ *
+ */
 public class SelectQuery extends SQLQuery
 {
+    /**
+     * the names of functions supported within SELECT queries in this project
+     * @author diament@yu.edu
+     */
     public enum Function
     {
 	AVG("AVG"),
@@ -25,6 +34,11 @@ public class SelectQuery extends SQLQuery
 	}
     };
     
+    /**
+     * holds the name of a column to order by, as well as a flag indicating if the result set should be ordered in ascending or descending order
+     * @author diament@yu.edu
+     *
+     */
     public static class OrderBy
     {
 	private boolean ascending;
@@ -78,7 +92,7 @@ public class SelectQuery extends SQLQuery
     
     /**
      * 
-     * @return the column names in the order in which they were listed in the query
+     * @return the column names selected by this query, in the order in which they were listed in the query
      */
     public ColumnID[] getSelectedColumnNames()
     {
@@ -91,7 +105,7 @@ public class SelectQuery extends SQLQuery
 
     /**
      * 
-     * @return the column names in the order in which they were listed in the query
+     * @return the names of the tables to select data from, in the order in which they were listed in the query
      */
     public String[] getFromTableNames()
     {
@@ -103,7 +117,7 @@ public class SelectQuery extends SQLQuery
     }    
     
     /**
-     * @return the distinct
+     * @return indicates if the query included "DISTINCT", i.e. that no values be repeated
      */
     public boolean isDistinct()
     {
@@ -115,19 +129,18 @@ public class SelectQuery extends SQLQuery
     }
 
     /**
-     * @return the where
+     * @return the "WHERE" condition of this query, if one exists
      */
     public Condition getWhereCondition()
     {
 	return this.where;
     }
-
     void setWhereCondition(Condition where)
     {
 	this.where = where;
     }
-
     /**
+     * if the query includes a function (e.g. - "SELECT AVG(foo)..."), this method returns the name of the function
      * @return the func
      */
     public Function getFunction()
@@ -138,10 +151,18 @@ public class SelectQuery extends SQLQuery
     {
 	this.func = func;
     }
+    /**
+     * not relevant to SELECT queries
+     * @throws UnsupportedOperationException
+     */
     public ColumnValuePair[] getColumnValuePairs()
     {
 	throw new UnsupportedOperationException();
     }
+    /**
+     * not relevant to SELECT queries
+     * @throws UnsupportedOperationException
+     */
     void addColumnValuePair(ColumnID col, String value)
     {
 	throw new UnsupportedOperationException();	

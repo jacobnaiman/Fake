@@ -39,8 +39,8 @@ public class SQLParser
 {
     /**
      * 
-     * @param sqlQuery
-     * @return
+     * @param sqlQuery the query to parse
+     * @return an object representing the query
      * @throws JSQLParserException
      */
     public SQLQuery parse(String sqlQuery) throws JSQLParserException
@@ -80,7 +80,7 @@ public class SQLParser
      * @return
      * @throws JSQLParserException
      */
-    public SelectQuery parseSelect(String sqlQuery) throws JSQLParserException
+    private SelectQuery parseSelect(String sqlQuery) throws JSQLParserException
     {
 	if(sqlQuery == null || sqlQuery.isEmpty())
 	{
@@ -295,7 +295,7 @@ public class SQLParser
      * @return
      * @throws JSQLParserException
      */
-    public InsertQuery parseInsert(String sqlQuery) throws JSQLParserException
+    private InsertQuery parseInsert(String sqlQuery) throws JSQLParserException
     {
 	if(sqlQuery == null || sqlQuery.isEmpty())
 	{
@@ -339,7 +339,7 @@ public class SQLParser
 	}
     }
     
-    public UpdateQuery parseUpdate(String sqlQuery) throws JSQLParserException
+    private UpdateQuery parseUpdate(String sqlQuery) throws JSQLParserException
     {
 	if(sqlQuery == null || sqlQuery.isEmpty())
 	{
@@ -374,7 +374,7 @@ public class SQLParser
 	addColumnValuePairs(queryObject,columns,values,queryObject.getTableName());
     }    
     
-    public DeleteQuery parseDelete(String sqlQuery) throws JSQLParserException
+    private DeleteQuery parseDelete(String sqlQuery) throws JSQLParserException
     {
 	if(sqlQuery == null || sqlQuery.isEmpty())
 	{
@@ -405,7 +405,7 @@ public class SQLParser
      * @return
      * @throws JSQLParserException
      */
-    public SQLQuery parseCreate(String sqlQuery) throws JSQLParserException
+    private SQLQuery parseCreate(String sqlQuery) throws JSQLParserException
     {
 	if(sqlQuery == null || sqlQuery.isEmpty())
 	{

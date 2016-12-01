@@ -1,7 +1,17 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 
+/**
+ * represents a condition specified in a "WHERE" clause in a sql query
+ * @author diament@yu.edu
+ *
+ */
 public class Condition
 {
+    /**
+     * the different operators that can be used in a condition
+     * @author diament@yu.edu
+     *
+     */
     public enum Operator
     {
 	EQUALS("="),
@@ -29,10 +39,6 @@ public class Condition
     private Operator operator;
     private Object rightOperand;
     
-    Condition()
-    {
-    }
-    
     public String toString()
     {
 	return this.leftOperand.toString() + " " + this.operator.name() + " " + this.rightOperand.toString();
@@ -44,7 +50,7 @@ public class Condition
      * @param operator
      * @param rightOperand
      */
-    public Condition(Object leftOperand, Operator operator, Object rightOperand)
+    Condition(Object leftOperand, Operator operator, Object rightOperand)
     {
 	this.leftOperand = this.testOperandValidity(leftOperand);
 	this.operator = operator;
@@ -65,7 +71,7 @@ public class Condition
 	throw new IllegalArgumentException("Operands must be a String, Condition, or ColumnID");
     }
     /**
-     * @return the leftOperand
+     * @return the left operand of this condition
      */
     public Object getLeftOperand()
     {
@@ -87,7 +93,7 @@ public class Condition
 	this.operator = operator;
     }
     /**
-     * @return the rightOperand
+     * @return the right operand of this condition
      */
     public Object getRightOperand()
     {

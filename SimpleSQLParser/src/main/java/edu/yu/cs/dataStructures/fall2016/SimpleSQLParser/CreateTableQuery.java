@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * @author diament@yu.edu
- *
+ * represents a CREATE TABLE query
  */
 public class CreateTableQuery extends SQLQuery
 {
@@ -42,8 +42,7 @@ public class CreateTableQuery extends SQLQuery
     public ColumnDescription getPrimaryKeyColumn()
     {
 	return this.primaryKeyColumn;
-    }
-    
+    }    
     void setPrimaryKeyColumn(String columnName)
     {
 	ColumnDescription fake = new ColumnDescription();
@@ -71,11 +70,18 @@ public class CreateTableQuery extends SQLQuery
     {
 	this.tableName = tableName;
     }
-    
+    /**
+     * not relevant to CREATE queries
+     * @throws UnsupportedOperationException
+     */        
     public ColumnValuePair[] getColumnValuePairs()
     {
 	throw new UnsupportedOperationException();
     }
+    /**
+     * not relevant to CREATE queries
+     * @throws UnsupportedOperationException
+     */        
     void addColumnValuePair(ColumnID col, String value)
     {
 	throw new UnsupportedOperationException();	

@@ -1,5 +1,10 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 
+/**
+ * identifies a a column using the column name and table name
+ * @author diament@yu.edu
+ *
+ */
 public class ColumnID
 {
     private String columnName;
@@ -18,7 +23,9 @@ public class ColumnID
     {
 	return this.tableName;
     }
-    
+    /**
+     * @return the table name, followed by a period, followed by the column name
+     */
     public String toString()
     {
 	if(this.tableName != null)

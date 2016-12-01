@@ -1,5 +1,9 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
-
+/**
+ * represents the ID of a column and the value to set it to in an INSERT or UPDATE query
+ * @author diament@yu.edu
+ *
+ */
 public class ColumnValuePair
 {
     private ColumnID col;
@@ -11,7 +15,7 @@ public class ColumnValuePair
 	this.value = value;
     }
 
-    public ColumnID getCOlumnID()
+    public ColumnID getColumnID()
     {
 	return this.col;
     }

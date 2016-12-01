@@ -1,5 +1,10 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 
+/**
+ * represents a CREATE INDEX query
+ * @author diament@yu.edu
+ *
+ */
 public class CreateIndexQuery extends SQLQuery
 {
     private String tableName;
@@ -12,7 +17,7 @@ public class CreateIndexQuery extends SQLQuery
     }
 
     /**
-     * @return the tableName
+     * @return the name of the table which contains the column to index
      */
     public String getTableName()
     {
@@ -24,7 +29,7 @@ public class CreateIndexQuery extends SQLQuery
     }
 
     /**
-     * @return the columnName
+     * @return the name of the column on which to create the index
      */
     public String getColumnName()
     {
@@ -36,7 +41,7 @@ public class CreateIndexQuery extends SQLQuery
     }
 
     /**
-     * @return the indexName
+     * @return the name of the index
      */
     public String getIndexName()
     {
@@ -46,10 +51,18 @@ public class CreateIndexQuery extends SQLQuery
     {
 	this.indexName = indexName;
     }
+    /**
+     * not relevant to CREATE queries
+     * @throws UnsupportedOperationException
+     */        
     public ColumnValuePair[] getColumnValuePairs()
     {
 	throw new UnsupportedOperationException();
     }
+    /**
+     * not relevant to CREATE queries
+     * @throws UnsupportedOperationException
+     */        
     void addColumnValuePair(ColumnID col, String value)
     {
 	throw new UnsupportedOperationException();	
