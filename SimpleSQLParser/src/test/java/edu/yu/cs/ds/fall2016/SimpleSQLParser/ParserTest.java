@@ -12,7 +12,7 @@ import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.UpdateQuery;
 import net.sf.jsqlparser.JSQLParserException;
 
 /**
- * Unit test for simple App.
+ * Examples of parsing queries
  */
 public class ParserTest
 {
