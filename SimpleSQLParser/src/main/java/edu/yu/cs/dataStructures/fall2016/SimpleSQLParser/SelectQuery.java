@@ -1,6 +1,8 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,7 +16,7 @@ public class SelectQuery extends SQLQuery
      * the names of functions supported within SELECT queries in this project
      * @author diament@yu.edu
      */
-    public enum Function
+    public enum FunctionName
     {
 	AVG("AVG"),
 	COUNT("COUNT"),
@@ -23,7 +25,7 @@ public class SelectQuery extends SQLQuery
 	SUM("SUM");
 	
 	private String name;
-	private Function(String name)
+	private FunctionName(String name)
 	{
 	    this.name = name;
 	}
@@ -33,6 +35,12 @@ public class SelectQuery extends SQLQuery
 	    return this.name;
 	}
     };
+    
+    public static class FunctionInstance
+    {
+	public FunctionName function;
+	public boolean isDistinct;	
+    }
     
     /**
      * holds the name of a column to order by, as well as a flag indicating if the result set should be ordered in ascending or descending order
@@ -66,7 +74,7 @@ public class SelectQuery extends SQLQuery
     private Set<String> tableNames;
     private boolean distinct;
     private Condition where;
-    private Function func;
+    private Map<ColumnID,FunctionInstance> functionMap;
     private Set<OrderBy> orderBys;
     
     SelectQuery(String queryString)
@@ -75,6 +83,7 @@ public class SelectQuery extends SQLQuery
 	this.columnNames = new HashSet<>(); 
 	this.tableNames = new HashSet<>();
 	this.orderBys = new HashSet<>();
+	this.functionMap = new HashMap<>();
     }
 
     /**
@@ -140,16 +149,16 @@ public class SelectQuery extends SQLQuery
 	this.where = where;
     }
     /**
-     * if the query includes a function (e.g. - "SELECT AVG(foo)..."), this method returns the name of the function
-     * @return the func
+     *  
+     * @return a map that indicates which function is being applied to a given column. If there is no function on a given column, then map.get(columnID) will return null
      */
-    public Function getFunction()
+    public Map<ColumnID,FunctionInstance> getFunctionMap()
     {
-	return func;
+	return this.functionMap;
     }
-    void setFunction(Function func)
+    void addFunction(ColumnID column,FunctionInstance func)
     {
-	this.func = func;
+	this.functionMap.put(column, func);
     }
     /**
      * not relevant to SELECT queries

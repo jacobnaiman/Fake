@@ -2,6 +2,7 @@ package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 
 import java.util.List;
 
+import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.SelectQuery.FunctionInstance;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
@@ -264,13 +265,17 @@ public class SQLParser
 	    else if(expression instanceof Function)
 	    {	
 		Function func = (Function)expression;
-		//set the function name
-		queryObject.setFunction(SelectQuery.Function.valueOf(func.getName()));
+		//create the function instance
+		FunctionInstance funcInst = new FunctionInstance();
+		funcInst.function = SelectQuery.FunctionName.valueOf(func.getName());		
 		//set if the function is distinct, e.g. "COUNT(DISTINCT column_name)"
-		queryObject.setDistinct(func.isDistinct());
+		funcInst.isDistinct = func.isDistinct();
 		//set the column that the function is acting on
 		Column funcTarget = (Column)func.getParameters().getExpressions().get(0);
-		queryObject.addSelectedColumnName(colToColumnID(funcTarget));		
+		ColumnID colid = colToColumnID(funcTarget);
+		queryObject.addFunction(colid, funcInst);
+		//add the column to the list of columns relevant to this query
+		queryObject.addSelectedColumnName(colid);		
 	    }
 	}		
     }
