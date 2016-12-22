@@ -426,10 +426,6 @@ public class SQLParser
 	{
 	    return parseCreateTable(sqlQuery);
 	}
-	else if(lowerCaseQuery.startsWith("create table"))
-	{
-	    return parseCreateTable(sqlQuery);
-	}
 	else if(lowerCaseQuery.startsWith("create index"))
 	{
 	    return parseCreateIndex(sqlQuery);
