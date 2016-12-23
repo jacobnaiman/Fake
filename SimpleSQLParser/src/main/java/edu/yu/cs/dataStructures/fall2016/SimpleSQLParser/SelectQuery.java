@@ -1,5 +1,6 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -70,19 +71,19 @@ public class SelectQuery extends SQLQuery
 	}
     };
     
-    private Set<ColumnID> columnNames;
-    private Set<String> tableNames;
+    private ArrayList<ColumnID> columnNames;
+    private ArrayList<String> tableNames;
     private boolean distinct;
     private Condition where;
     private Map<ColumnID,FunctionInstance> functionMap;
-    private Set<OrderBy> orderBys;
+    private ArrayList<OrderBy> orderBys;
     
     SelectQuery(String queryString)
     {
 	super(queryString);
-	this.columnNames = new HashSet<>(); 
-	this.tableNames = new HashSet<>();
-	this.orderBys = new HashSet<>();
+	this.columnNames = new ArrayList<>(); 
+	this.tableNames = new ArrayList<>();
+	this.orderBys = new ArrayList<>();
 	this.functionMap = new HashMap<>();
     }
 
