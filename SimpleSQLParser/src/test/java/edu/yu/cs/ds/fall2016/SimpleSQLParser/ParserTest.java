@@ -8,6 +8,7 @@ import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.DeleteQuery;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.InsertQuery;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.SQLParser;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.SelectQuery;
+import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.SelectQuery.OrderBy;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.UpdateQuery;
 import net.sf.jsqlparser.JSQLParserException;
 
@@ -51,8 +52,9 @@ public class ParserTest
 	result = (SelectQuery)parser.parse("select * from students;");
 	result = (SelectQuery)parser.parse("select distinct first, last, id from students;");
 	result = (SelectQuery)parser.parse("select first, last, id from students where id=1234;");
-	result = (SelectQuery)parser.parse("select first, last, id from students where id=1234 AND first=\"moshe\";");
+	result = (SelectQuery)parser.parse("select first, last, id from students where id=1234 AND first='moshe';");
 	result = (SelectQuery)parser.parse("SELECT * FROM YCStudent ORDER BY GPA ASC, Credits DESC;");
+	OrderBy[] orderbys =  result.getOrderBys();
 	result = (SelectQuery)parser.parse("SELECT AVG(GPA) FROM STUDENTS;");	
 	result = (SelectQuery)parser.parse("SELECT COUNT(DISTINCT GPA) FROM STUDENTS;");	
     }
