@@ -5,6 +5,10 @@
   <groupId>edu.yu.cs.ds.fall2016</groupId>
   <artifactId>SimpleSQLParser</artifactId>
   <version>0.0.1</version>
+  <configuration>
+   <source>1.8</source>
+    <target>1.8</target>
+   </configuration>
   <packaging>jar</packaging>
 
   <name>SimpleSQLParser</name>
