@@ -176,6 +176,11 @@ public class SQLParser
 	}
 	else if(expression instanceof Column)
 	{
+	    Column col = (Column)expression;
+	    if(col.getColumnName().equalsIgnoreCase("true") || col.getColumnName().equalsIgnoreCase("false"))
+	    {
+		return col.getColumnName();
+	    }	    
 	    return this.colToColumnID((Column)expression);
 	}
 	else if(expression instanceof OldOracleJoinBinaryExpression)

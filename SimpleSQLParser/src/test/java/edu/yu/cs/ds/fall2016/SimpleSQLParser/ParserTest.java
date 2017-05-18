@@ -50,6 +50,7 @@ public class ParserTest
 	result = (SelectQuery)parser.parse("SELECT column1, column2 FROM table1 WHERE column3='some value' AND (column4='some value2' OR column4='some other value');");	
 	result = (SelectQuery)parser.parse("SELECT * FROM YCStudent, RIESTStudent WHERE YCStudent.BannerID = RIETS.BannerID;");
 	result = (SelectQuery)parser.parse("select * from students;");
+	result = (SelectQuery)parser.parse("select * from students WHERE CurrentStudent=TRUE;");
 	result = (SelectQuery)parser.parse("select distinct first, last, id from students;");
 	result = (SelectQuery)parser.parse("select first, last, id from students where id=1234;");
 	result = (SelectQuery)parser.parse("select first, last, id from students where id=1234 AND first='moshe';");
