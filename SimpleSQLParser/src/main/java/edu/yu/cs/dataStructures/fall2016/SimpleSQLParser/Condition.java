@@ -17,7 +17,7 @@ public class Condition
 	EQUALS("="),
 	NOT_EQUALS("<>"),
 	LESS_THAN("<"),
-	lESS_THAN_OR_EQUALS("<="),
+	LESS_THAN_OR_EQUALS("<="),
 	GREATER_THAN(">"),
 	GREATER_THAN_OR_EQUALS(">="),
 	AND("AND"),
