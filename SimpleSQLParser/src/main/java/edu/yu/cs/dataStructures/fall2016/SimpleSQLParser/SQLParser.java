@@ -236,7 +236,7 @@ public class SQLParser
 	}
 	else if(expression instanceof MinorThanEquals)
 	{
-	    op = Condition.Operator.lESS_THAN_OR_EQUALS;
+	    op = Condition.Operator.LESS_THAN_OR_EQUALS;
 	}
 	Object left = getCondition(expression.getLeftExpression());
 	Object right = getCondition(expression.getRightExpression());
