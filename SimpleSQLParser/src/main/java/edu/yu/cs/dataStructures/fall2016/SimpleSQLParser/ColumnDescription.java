@@ -49,7 +49,7 @@ public class ColumnDescription implements Comparable<ColumnDescription>
     {
 	return this.unique;
     }
-    void setUnique(boolean unique)
+    public void setUnique(boolean unique)
     {
 	this.unique = unique;
     }
@@ -58,7 +58,7 @@ public class ColumnDescription implements Comparable<ColumnDescription>
     {
 	return this.notNull;
     }
-    void setNotNull(boolean notNull)
+    public void setNotNull(boolean notNull)
     {
 	this.notNull = notNull;
     }

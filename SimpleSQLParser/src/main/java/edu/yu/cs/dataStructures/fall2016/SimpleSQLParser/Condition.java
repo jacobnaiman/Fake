@@ -50,7 +50,7 @@ public class Condition
      * @param operator
      * @param rightOperand
      */
-    Condition(Object leftOperand, Operator operator, Object rightOperand)
+    public Condition(Object leftOperand, Operator operator, Object rightOperand)
     {
 	this.leftOperand = this.testOperandValidity(leftOperand);
 	this.operator = operator;
