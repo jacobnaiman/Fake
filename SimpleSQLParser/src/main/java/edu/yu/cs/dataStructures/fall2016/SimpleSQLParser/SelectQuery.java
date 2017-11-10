@@ -40,7 +40,8 @@ public class SelectQuery extends SQLQuery
     public static class FunctionInstance
     {
 	public FunctionName function;
-	public boolean isDistinct;	
+	public boolean isDistinct;
+	public ColumnID column;
     }
     
     /**
@@ -75,7 +76,7 @@ public class SelectQuery extends SQLQuery
     private ArrayList<String> tableNames;
     private boolean distinct;
     private Condition where;
-    private Map<ColumnID,FunctionInstance> functionMap;
+    private ArrayList<FunctionInstance> functions;
     private ArrayList<OrderBy> orderBys;
     
     SelectQuery(String queryString)
@@ -84,7 +85,7 @@ public class SelectQuery extends SQLQuery
 	this.columnNames = new ArrayList<>(); 
 	this.tableNames = new ArrayList<>();
 	this.orderBys = new ArrayList<>();
-	this.functionMap = new HashMap<>();
+	this.functions = new ArrayList<>();
     }
 
     /**
@@ -153,13 +154,13 @@ public class SelectQuery extends SQLQuery
      *  
      * @return a map that indicates which function is being applied to a given column. If there is no function on a given column, then map.get(columnID) will return null
      */
-    public Map<ColumnID,FunctionInstance> getFunctionMap()
+    public ArrayList<FunctionInstance> getFunctions()
     {
-	return this.functionMap;
+	return this.functions;
     }
-    void addFunction(ColumnID column,FunctionInstance func)
+    void addFunction(FunctionInstance func)
     {
-	this.functionMap.put(column, func);
+	this.functions.add(func);
     }
     /**
      * not relevant to SELECT queries

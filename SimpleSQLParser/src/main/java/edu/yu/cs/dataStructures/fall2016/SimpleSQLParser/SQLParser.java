@@ -278,7 +278,8 @@ public class SQLParser
 		//set the column that the function is acting on
 		Column funcTarget = (Column)func.getParameters().getExpressions().get(0);
 		ColumnID colid = colToColumnID(funcTarget);
-		queryObject.addFunction(colid, funcInst);
+		funcInst.column = colid;
+		queryObject.addFunction(funcInst);
 		//add the column to the list of columns relevant to this query
 		queryObject.addSelectedColumnName(colid);		
 	    }
