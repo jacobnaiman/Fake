@@ -1,10 +1,6 @@
 package edu.yu.cs.dataStructures.fall2016.SimpleSQLParser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * represents a SELECT query
