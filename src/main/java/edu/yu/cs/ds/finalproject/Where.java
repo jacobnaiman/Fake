@@ -10,8 +10,8 @@ import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.Condition;
 
 public class Where {
 	private ColumnDescription[] cds;
-	public Where (Table table) {
-		this.cds = table.cds;
+	public Where (ColumnDescription[] cds) {
+		this.cds = cds;
 	}
 
 	public ArrayList<Row> where (List<Row> rows, Condition condition) {

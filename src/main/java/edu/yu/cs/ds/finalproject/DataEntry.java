@@ -1,5 +1,7 @@
 package edu.yu.cs.ds.finalproject;
 
+import java.util.Objects;
+
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.*;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.ColumnDescription.DataType;
 
@@ -51,7 +53,19 @@ public class DataEntry {
 			}
 		}
 		if (columnDescription.getColumnType().equals(DataType.DECIMAL)) {
-			if ((columnDescription.getFractionLength() < value.length() - 1) && (columnDescription.getFractionLength() != 0)) {
+			char[] letters = value.toCharArray();
+			int predecimal = 0;
+			for(int i = 0; i < letters.length; i++) {
+				if(letters[i] == '.') {
+					break;
+				}
+				predecimal++;
+			}
+			int postdecimal = letters.length - predecimal - 1;
+			if ((columnDescription.getWholeNumberLength() < predecimal) && (columnDescription.getWholeNumberLength() != 0)) {
+				throw new IllegalArgumentException("Your whole number is too long");
+			}
+			if ((columnDescription.getFractionLength() < postdecimal) && (columnDescription.getFractionLength() != 0)) {
 				throw new IllegalArgumentException("Your fractional number is too long");
 			}
 		}
@@ -60,5 +74,20 @@ public class DataEntry {
 				throw new IllegalArgumentException("Your varchar is too long");
 			}
 		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null) {
+			return false;
+		}
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+		DataEntry otherDataEntry= (DataEntry) o;
+		return Objects.equals(this.value, otherDataEntry.value);
 	}
 }

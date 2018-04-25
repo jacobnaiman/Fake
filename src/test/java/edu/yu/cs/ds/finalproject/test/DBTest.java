@@ -1353,4 +1353,414 @@ public class DBTest {
 		assertEquals("true", db.allTables.get(0).rows.get(0).rowEntries[cur].value);
 		assertEquals("sophomore", db.allTables.get(0).rows.get(0).rowEntries[cla].value);
 	}
+	
+	@Test
+	public void deleteWithWhereHappyPath3() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, junior)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		db.execute("DELETE FROM YCStudent WHERE GPA<3.9 AND Class=sophomore OR SSNum=124");
+		assertEquals(2, db.allTables.get(0).rows.size());
+		int ban = 0;
+		int ss = 0;
+		int first = 0;
+		int last = 0;
+		int gpa = 0;
+		int cur = 0;
+		int cla = 0;
+		for (int i = 0; i < 7; i++) {
+			if (db.allTables.get(0).cds[i].getColumnName().equals("BannerID")) {
+				ban = i;
+				continue;
+			}
+			if (db.allTables.get(0).cds[i].getColumnName().equals("Class")) {
+				cla = i;
+				continue;
+			}
+			if (db.allTables.get(0).cds[i].getColumnName().equals("SSNum")) {
+				ss = i;
+				continue;
+			}
+			if (db.allTables.get(0).cds[i].getColumnName().equals("FirstName")) {
+				first = i;
+				continue;
+			}
+			if (db.allTables.get(0).cds[i].getColumnName().equals("LastName")) {
+				last = i;
+				continue;
+			}
+			if (db.allTables.get(0).cds[i].getColumnName().equals("GPA")) {
+				gpa = i;
+				continue;
+			}
+			if (db.allTables.get(0).cds[i].getColumnName().equals("CurrentStudent")) {
+				cur = i;
+				continue;
+			}
+		}//delete eli and gilad, and judah
+		assertEquals("800123456", db.allTables.get(0).rows.get(0).rowEntries[ban].value);
+		assertEquals("Jacob", db.allTables.get(0).rows.get(0).rowEntries[first].value);
+		assertEquals("Naiman", db.allTables.get(0).rows.get(0).rowEntries[last].value);
+		assertEquals("3.9", db.allTables.get(0).rows.get(0).rowEntries[gpa].value);
+		assertEquals("123", db.allTables.get(0).rows.get(0).rowEntries[ss].value);
+		assertEquals("true", db.allTables.get(0).rows.get(0).rowEntries[cur].value);
+		assertEquals("sophomore", db.allTables.get(0).rows.get(0).rowEntries[cla].value);
+		assertEquals("800123459", db.allTables.get(0).rows.get(1).rowEntries[ban].value);
+		assertEquals("Jacob", db.allTables.get(0).rows.get(1).rowEntries[first].value);
+		assertEquals("Mendleson", db.allTables.get(0).rows.get(1).rowEntries[last].value);
+		assertEquals("4.0", db.allTables.get(0).rows.get(1).rowEntries[gpa].value);
+		assertEquals("126", db.allTables.get(0).rows.get(1).rowEntries[ss].value);
+		assertEquals("true", db.allTables.get(0).rows.get(1).rowEntries[cur].value);
+		assertEquals("junior", db.allTables.get(0).rows.get(1).rowEntries[cla].value);
+	}
+	
+	@Test
+	public void selectAllColumns() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, junior)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT * FROM YCStudent");
+		//System.out.println(RS.columns.get(0));
+		int ban = 0;
+		int ss = 0;
+		int first = 0;
+		int last = 0;
+		int gpa = 0;
+		int cur = 0;
+		int cla = 0;
+		for (int i = 0; i < 7; i++) {
+			//System.out.println("count");
+			if (RS.columns.get(i).getColumnName().equals("BannerID")) {
+				ban = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("Class")) {
+				cla = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("SSNum")) {
+				ss = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("FirstName")) {
+				first = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("LastName")) {
+				last = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("GPA")) {
+				gpa = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("CurrentStudent")) {
+				cur = i;
+				continue;
+			}
+		}//delete eli and gilad, and judah
+		assertEquals("800123456", RS.columns.get(ban).getSelectColumn().get(0).value);
+		assertEquals("800123457", RS.columns.get(ban).getSelectColumn().get(1).value);
+		assertEquals("800123458", RS.columns.get(ban).getSelectColumn().get(2).value);
+		assertEquals("800123459", RS.columns.get(ban).getSelectColumn().get(3).value);
+		assertEquals("800123454", RS.columns.get(ban).getSelectColumn().get(4).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(0).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(1).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(2).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(3).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(4).value);
+		assertEquals("Jacob", RS.columns.get(first).getSelectColumn().get(0).value);
+		assertEquals("Eli", RS.columns.get(first).getSelectColumn().get(1).value);
+		assertEquals("Gilad", RS.columns.get(first).getSelectColumn().get(2).value);
+		assertEquals("Jacob", RS.columns.get(first).getSelectColumn().get(3).value);
+		assertEquals("Judah", RS.columns.get(first).getSelectColumn().get(4).value);
+		assertEquals("Naiman", RS.columns.get(last).getSelectColumn().get(0).value);
+		assertEquals("Goldberg", RS.columns.get(last).getSelectColumn().get(1).value);
+		assertEquals("Felson", RS.columns.get(last).getSelectColumn().get(2).value);
+		assertEquals("Mendleson", RS.columns.get(last).getSelectColumn().get(3).value);
+		assertEquals("Goldfeder", RS.columns.get(last).getSelectColumn().get(4).value);
+		assertEquals("3.9", RS.columns.get(gpa).getSelectColumn().get(0).value);
+		assertEquals("4.0", RS.columns.get(gpa).getSelectColumn().get(1).value);
+		assertEquals("3.7", RS.columns.get(gpa).getSelectColumn().get(2).value);
+		assertEquals("4.0", RS.columns.get(gpa).getSelectColumn().get(3).value);
+		assertEquals("3.2", RS.columns.get(gpa).getSelectColumn().get(4).value);
+		assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(0).value);
+		assertEquals("freshman", RS.columns.get(cla).getSelectColumn().get(1).value);
+		assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(2).value);
+		assertEquals("junior", RS.columns.get(cla).getSelectColumn().get(3).value);
+		assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(4).value);
+		assertEquals("123", RS.columns.get(ss).getSelectColumn().get(0).value);
+		assertEquals("124", RS.columns.get(ss).getSelectColumn().get(1).value);
+		assertEquals("125", RS.columns.get(ss).getSelectColumn().get(2).value);
+		assertEquals("126", RS.columns.get(ss).getSelectColumn().get(3).value);
+		assertEquals("127", RS.columns.get(ss).getSelectColumn().get(4).value);
+		//RS.print();
+	}
+	
+	@Test
+	public void selectAllColumnsWithWhere() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, junior)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT * FROM YCStudent WHERE (GPA > 3.6 AND FirstName<>Jacob) OR GPA <= 3.2");
+		//System.out.println(RS.columns.get(0));
+		
+		//delete eli and gilad, and judah
+		assertEquals(3, RS.columns.get(0).getSelectColumn().size());
+		//RS.print();
+	}
+	
+	@Test
+	public void selectSomeColumns() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, junior)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT FirstName, LastName, GPA, SSNum FROM YCStudent");
+		//System.out.println(RS.columns.get(0));
+		int ban = 0;
+		int ss = 0;
+		int first = 0;
+		int last = 0;
+		int gpa = 0;
+		int cur = 0;
+		int cla = 0;
+		for (int i = 0; i < 4; i++) {
+			//System.out.println("count");
+			if (RS.columns.get(i).getColumnName().equals("BannerID")) {
+				ban = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("Class")) {
+				cla = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("SSNum")) {
+				ss = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("FirstName")) {
+				first = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("LastName")) {
+				last = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("GPA")) {
+				gpa = i;
+				continue;
+			}
+			if (RS.columns.get(i).getColumnName().equals("CurrentStudent")) {
+				cur = i;
+				continue;
+			}
+		}
+		/*
+		assertEquals("800123456", RS.columns.get(ban).getSelectColumn().get(0).value);
+		assertEquals("800123457", RS.columns.get(ban).getSelectColumn().get(1).value);
+		assertEquals("800123458", RS.columns.get(ban).getSelectColumn().get(2).value);
+		assertEquals("800123459", RS.columns.get(ban).getSelectColumn().get(3).value);
+		assertEquals("800123454", RS.columns.get(ban).getSelectColumn().get(4).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(0).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(1).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(2).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(3).value);
+		assertEquals("true", RS.columns.get(cur).getSelectColumn().get(4).value);*/
+		assertEquals("Jacob", RS.columns.get(first).getSelectColumn().get(0).value);
+		assertEquals("Eli", RS.columns.get(first).getSelectColumn().get(1).value);
+		assertEquals("Gilad", RS.columns.get(first).getSelectColumn().get(2).value);
+		assertEquals("Jacob", RS.columns.get(first).getSelectColumn().get(3).value);
+		assertEquals("Judah", RS.columns.get(first).getSelectColumn().get(4).value);
+		assertEquals("Naiman", RS.columns.get(last).getSelectColumn().get(0).value);
+		assertEquals("Goldberg", RS.columns.get(last).getSelectColumn().get(1).value);
+		assertEquals("Felson", RS.columns.get(last).getSelectColumn().get(2).value);
+		assertEquals("Mendleson", RS.columns.get(last).getSelectColumn().get(3).value);
+		assertEquals("Goldfeder", RS.columns.get(last).getSelectColumn().get(4).value);
+		assertEquals("3.9", RS.columns.get(gpa).getSelectColumn().get(0).value);
+		assertEquals("4.0", RS.columns.get(gpa).getSelectColumn().get(1).value);
+		assertEquals("3.7", RS.columns.get(gpa).getSelectColumn().get(2).value);
+		assertEquals("4.0", RS.columns.get(gpa).getSelectColumn().get(3).value);
+		assertEquals("3.2", RS.columns.get(gpa).getSelectColumn().get(4).value);
+		/*assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(0).value);
+		assertEquals("freshman", RS.columns.get(cla).getSelectColumn().get(1).value);
+		assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(2).value);
+		assertEquals("junior", RS.columns.get(cla).getSelectColumn().get(3).value);
+		assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(4).value);*/
+		assertEquals("123", RS.columns.get(ss).getSelectColumn().get(0).value);
+		assertEquals("124", RS.columns.get(ss).getSelectColumn().get(1).value);
+		assertEquals("125", RS.columns.get(ss).getSelectColumn().get(2).value);
+		assertEquals("126", RS.columns.get(ss).getSelectColumn().get(3).value);
+		assertEquals("127", RS.columns.get(ss).getSelectColumn().get(4).value);
+		//RS.print();
+	}
+	
+	@Test
+	public void selectDistinctSomeColumns() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, junior)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT DISTINCT Class FROM YCStudent");
+		//System.out.println(RS.columns.get(0));
+		
+		assertEquals("sophomore", RS.columns.get(0).getSelectColumn().get(0).value);
+		assertEquals("freshman", RS.columns.get(0).getSelectColumn().get(1).value);
+		////assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(2).value);
+		assertEquals("junior", RS.columns.get(0).getSelectColumn().get(2).value);
+		////assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(4).value);
+		assertEquals(3, RS.columns.get(0).getSelectColumn().size());
+		System.out.println("distinct");
+		RS.print();
+	}
+	
+	@Test
+	public void selectDistinctMoreColumns() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT DISTINCT Class, FirstName FROM YCStudent");
+		//System.out.println(RS.columns.get(0));
+		
+		//assertEquals("sophomore", RS.columns.get(0).getSelectColumn().get(0).value);
+		//assertEquals("freshman", RS.columns.get(0).getSelectColumn().get(1).value);
+		////assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(2).value);
+		//assertEquals("junior", RS.columns.get(0).getSelectColumn().get(2).value);
+		////assertEquals("sophomore", RS.columns.get(cla).getSelectColumn().get(4).value);
+		//assertEquals(3, RS.columns.get(0).getSelectColumn().size());
+		System.out.println("distinct");
+		RS.print();
+	}
+	
+	@Test
+	public void selectSomeColumnsOrderBy() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, junior)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT FirstName, LastName, GPA, SSNum FROM YCStudent ORDER BY LastName ASC");
+		//RS.print();
+	}
+	
+	@Test
+	public void selectSomeColumnsOrderByMultiple() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, junior)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT FirstName, LastName, GPA, SSNum FROM YCStudent ORDER BY GPA ASC, FirstName DESC");
+		//RS.print();
+	}
+	
+	@Test
+	public void selectSomeColumnsOrderByMultiple3() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT FirstName, LastName, GPA, SSNum, Class FROM YCStudent ORDER BY Class ASC, FirstName DESC, GPA DESC");
+		RS.print();
+	}
+	
+	@Test
+	public void selectSomeColumnsOrderByMultiple5() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123451, 122, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123452, 121, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123453, 120, sophomore)");
+		//assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT FirstName, LastName, GPA, SSNum, Class FROM YCStudent ORDER BY Class ASC, FirstName DESC, GPA DESC, SSNum ASC");
+		//RS.print();
+	}
+	
+	@Test
+	public void selectAverageAndSum() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT AVG (GPA), SUM(SSNum) FROM YCStudent");
+		
+		RS.print();
+	}
+	
+	@Test
+	public void selectMinAndMaxandCount() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT MIN (GPA), COUNT(SSNum), MAX(LastName) FROM YCStudent");
+		
+		RS.print();
+	}
+	
+	@Test
+	public void selectCountDistinct() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT MIN (FirstName), COUNT (DISTINCT GPA), MAX(LastName) FROM YCStudent");
+		
+		RS.print();
+	}
+	
+	@Test
+	public void selectColumnsandFunction() throws JSQLParserException {
+		db.execute("CREATE TABLE YCStudent (BannerID int, SSNum int UNIQUE, FirstName varchar(255), LastName varchar(255) NOT NULL, GPA decimal(1,2) DEFAULT 0.00, CurrentStudent boolean DEFAULT true, Class varchar(100), PRIMARY KEY (BannerID))");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Naiman, 3.9, true, 800123456, 123, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Eli, Goldberg, 4.0, true, 800123457, 124, freshman)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Gilad, Felson, 3.7, true, 800123458, 125, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Jacob, Mendleson, 4.0, true, 800123459, 126, sophomore)");
+		db.execute("INSERT INTO YCStudent (FirstName, LastName, GPA, CurrentStudent, BannerID, SSNum, Class) VALUES (Judah, Goldfeder, 3.2, true, 800123454, 127, sophomore)");
+		assertEquals(5, db.allTables.get(0).rows.size());
+		ResultSet RS = db.execute("SELECT FirstName, LastName, MIN (GPA), AVG(SSNum), CurrentStudent FROM YCStudent");
+		
+		RS.print();
+	}
 }

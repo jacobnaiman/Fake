@@ -3,8 +3,6 @@ package edu.yu.cs.ds.finalproject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.*;
 import net.sf.jsqlparser.JSQLParserException;
 
@@ -20,7 +18,6 @@ public class Database {
 		SQLQuery sqlQuery = parser.parse(str);
 		ResultSet resultSet = this.performQuery(sqlQuery);
 		return resultSet;
-
 	}
 	
 	public ResultSet performQuery(SQLQuery sqlQuery) {
@@ -83,26 +80,43 @@ public class Database {
 		return null;
 	}
 	
-	
-	
+	//2.rounding of sum/ figure out the whole number lengths/fractional
 	public ResultSet select(SelectQuery SQ) {
-		String[] sqTables = SQ.getFromTableNames();
-		List<ColumnDescription> selectedColumns = new ArrayList<ColumnDescription>();
+		ResultSet resultSet = null;
 		for (Table table : this.allTables) {
-			for (String sqTableName : sqTables) {
-				if (sqTableName.equals(table.tableName)) {
-					selectedColumns = table.getSelectColumns(SQ.getSelectedColumnNames());
+			if (SQ.getFromTableNames()[0].equals(table.tableName)) {
+				ArrayList<ColumnDescription> selectedColumns = table.addSelectedColumns(SQ);
+				List<Row> returnedRows = table.addSelectRows(SQ, selectedColumns);
+				if(SQ.isDistinct()) {
+					returnedRows = table.distinct(selectedColumns, returnedRows);
 				}
+				List<SelectColumn> allSelectColumns = new ArrayList<SelectColumn>();
+				for(ColumnDescription cd : selectedColumns) {
+					SelectColumn selectColumn = new SelectColumn(returnedRows, cd, cd.getColumnName(), SQ.getFunctions(), SQ.getOrderBys());
+					allSelectColumns.add(selectColumn);
+				}
+				for(int i = 0; i < allSelectColumns.size(); i++) {
+					if (allSelectColumns.get(i).hasFunction()){
+						allSelectColumns.get(i).performFunction(allSelectColumns.get(i).getFunction());
+					}
+				}
+				table.extendFunctionColumns(allSelectColumns);
+				if(SQ.getOrderBys().length > 0) {
+					OrderByTable newTable = new OrderByTable((ArrayList<Row>)returnedRows, (ArrayList<SelectColumn>)allSelectColumns, SQ.getOrderBys());
+					newTable.doOrderBys();
+					allSelectColumns = newTable.getSelectColumns();
+				}
+			resultSet = new ResultSet(allSelectColumns, SQ);
 			}	
 		}
-		return null;
-	}
+		return resultSet;
+	}	
 	
 	public ResultSet update(UpdateQuery UQ) {
 		for (Table table : this.allTables) {
 			if (table.tableName.equals(UQ.getTableName())) {
 				try {
-					Where where = new Where (table);
+					Where where = new Where (table.cds);
 					List<Row> temp = new ArrayList<Row>(table.rows);
 					List<Row> returnedRows = where.where((ArrayList<Row>) temp, UQ.getWhereCondition());
 					for (Row row : returnedRows) {
@@ -124,15 +138,18 @@ public class Database {
 		for (Table table : this.allTables) {
 			if (table.tableName.equals(DQ.getTableName())) {
 				try {
-					Where where = new Where(table);
+					Where where = new Where(table.cds);
 					List<Row> temp = new ArrayList<Row>(table.rows);
 					List<Row> returnedRows = where.where((ArrayList<Row>) temp, DQ.getWhereCondition());
 					List<Integer> indecesToBeDeleted = new ArrayList<Integer>();
 					for (Row row : returnedRows) {
 						indecesToBeDeleted.add(table.findIndex(row));
 					}
-					for(int i : indecesToBeDeleted) {
-						table.rows.remove(i);
+					indecesToBeDeleted = table.sortIntegers((ArrayList<Integer>) indecesToBeDeleted);
+					int size = indecesToBeDeleted.size() - 1;
+					for (int j = size; j >= 0; j--) {
+						int index = indecesToBeDeleted.get(j);
+						table.rows.remove(index);
 					}
 				}
 				catch (NullPointerException e) {
