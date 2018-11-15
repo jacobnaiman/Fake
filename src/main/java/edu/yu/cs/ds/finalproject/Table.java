@@ -1,6 +1,8 @@
 package edu.yu.cs.ds.finalproject;
 
+import java.awt.RenderingHints.Key;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,18 +11,29 @@ import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.ColumnDescription;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.ColumnID;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.ColumnValuePair;
 import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.SelectQuery;
+import edu.yu.cs.dataStructures.fall2016.SimpleSQLParser.SelectQuery.FunctionInstance;
 
 public class Table {
 	public List<Row> rows;
 	public ColumnDescription[] cds;
 	public String tableName;
 	public ColumnDescription primaryKey;
+	public ArrayList<Column> columns;
+	public ArrayList<BTree> indexedColumns;
 	
+	/**
+	 * This method creates a table and initializes all the fields with the input parameters
+	 * @param name - table name
+	 * @param cds - column descriptions
+	 * @param pK - the primary key column
+	 */
 	public Table(String name, ColumnDescription[] cds, ColumnDescription pK) {
 		this.rows = new ArrayList<Row>();
 		this.cds = cds;
 		this.tableName = name;
 		this.primaryKey = pK;
+		this.columns = this.createColumns();
+		this.indexedColumns = new ArrayList<BTree>();
 	}
 	
 	public Table(String name, ColumnDescription[] cds, ArrayList<Row> rows) {
@@ -32,23 +45,41 @@ public class Table {
 		}
 	}
 	
+	/**
+	 * adds a new row to a table
+	 * @return row - the row being inserted
+	 */
 	public Row addRow() {
 		Row row = new Row(this.cds.length);
 		this.rows.add(row);
 		return row;
 	}
 	
+	public ArrayList<Column> createColumns() {
+		ArrayList<Column> columns = new ArrayList<Column>();
+		for(ColumnDescription cd : this.cds) {
+			Column column = new Column(cd, this);
+			columns.add(column);
+		}
+		return columns;
+		
+	}
+	
+	/**
+	 * This method inserts the values from the column value pairs of a query into a row
+	 * @param colVals
+	 * @param row
+	 * @return the row that the values are being inserted into
+	 */
 	public Row putInValues(ColumnValuePair[] colVals, Row row) {
 		int counter = 0;
 		this.duplicateCheck(colVals);
-		//iterate through all the columns
-		for (int j = 0; j < this.cds.length; j++) {
-			//adding the actual data from the colvalpairs
+		for (int j = 0; j < this.cds.length; j++) {//iterate through all the columns
 			for(ColumnValuePair CVP : colVals) {
 				//linking the colvalpair to its column
 				if (CVP.getColumnID().getColumnName().equals(this.cds[j].getColumnName())) {
 					DataEntry dataEntry = new DataEntry(CVP);
-					dataEntry.performValueChecks(this.cds[j]);//datatype and length
+					dataEntry.performValueChecks(this.cds[j]); //datatype and length
 					//checks if it is a unique column or primary key which is unique
 					if(this.cds[j].isUnique() || this.cds[j].equals(this.primaryKey)) {
 						this.uniquenessCheck(dataEntry, j);
@@ -57,8 +88,7 @@ public class Table {
 					counter++;
 				}
 			}
-			//checks if it is a not null column or the primary key which is also not null
-			try {
+			try {//checks if it is a not null column or the primary key which is also not null
 			if((this.cds[j].isNotNull() || this.cds[j].equals(this.primaryKey)) && row.rowEntries[j].value.equals(null)) {
 				throw new IllegalArgumentException("You did not put a value into a nonnull row");
 			}} 
@@ -72,6 +102,9 @@ public class Table {
 		return row;
 	}
 	
+	/**
+	 * makes sure the primary key does not have a default value
+	 */
 	public void primaryKeyChecks() {
 		for (ColumnDescription cd : this.cds) {
 			if (cd.equals(this.primaryKey)) {
@@ -82,6 +115,11 @@ public class Table {
 		}
 	}
 	
+	/**
+	 * Ensures unique and primary key columns do not have repeat values
+	 * @param entry
+	 * @param j - the index of the column
+	 */
 	public void uniquenessCheck(DataEntry entry, int j) {
 		for (Row row : this.rows) {
 			try {
@@ -96,22 +134,32 @@ public class Table {
 		}
 	}
 	
+	/**
+	 * Adds all the columns requested to be selected to the arrayList
+	 * @param columnIDs
+	 * @return an arraylist of column descriptions
+	 */
 	public ArrayList<ColumnDescription> getSelectColumns(ColumnID[] columnIDs) {
 		ArrayList<ColumnDescription> selectedColumns = new ArrayList<ColumnDescription>();
-		int i = 0;
 		for (ColumnID selectColumn : columnIDs) {
-			System.out.println("times");
+			int i = 0;
 			for (ColumnDescription cd : this.cds) {
 				if (cd.getColumnName().equals(selectColumn.getColumnName())) {
 					selectedColumns.add(cd);
-					i++;
-					
-				}
+					i++;	
+				}	
+			}
+			if(i == 0) {
+				throw new IllegalArgumentException("You tried to select a column which does not exist");
 			}
 		}
 		return selectedColumns;
 	}
 	
+	/**
+	 * Ensures the same column was not entered twice
+	 * @param CVPs
+	 */
 	private void duplicateCheck(ColumnValuePair[] CVPs) {
 		Set<String> tempSet = new HashSet<String>();
 		List<String> tempList = new ArrayList<String>();
@@ -135,42 +183,43 @@ public class Table {
 		return index;
 	}
 	
+	/**
+	 * recursively sorts an arraylist of integers in order
+	 * merge sort algorithm taken mostly from http://www.codexpedia.com/java/java-merge-sort-implementation/
+	 * @param whole
+	 * @return
+	 */
 	public ArrayList<Integer> sortIntegers(ArrayList<Integer> whole) {
 		ArrayList<Integer> left = new ArrayList<Integer>();
 	    ArrayList<Integer> right = new ArrayList<Integer>();
 	    int center;
-	 
 	    if (whole.size() == 1) {    
 	        return whole;
 	    } else {
 	        center = whole.size()/2;
-	        // copy the left half of whole into the left.
 	        for (int i=0; i<center; i++) {
 	                left.add(whole.get(i));
 	        }
-	 
-	        //copy the right half of whole into the new arraylist.
 	        for (int i=center; i<whole.size(); i++) {
 	                right.add(whole.get(i));
 	        }
-	 
-	        // Sort the left and right halves of the arraylist.
 	        left  = sortIntegers(left);
 	        right = sortIntegers(right);
-	 
-	        // Merge the results back together.
 	        this.mergeIntegers(left, right, whole);
 	    }
 	    return whole;
 	}
 	
+	/**
+	 * merges the lists of sorted integers together
+	 * merge sort algorithm taken mostly from http://www.codexpedia.com/java/java-merge-sort-implementation/
+	 * @param whole
+	 * @return
+	 */
 	private void mergeIntegers(ArrayList<Integer> left, ArrayList<Integer> right, ArrayList<Integer> whole) {
 	    int leftIndex = 0;
 	    int rightIndex = 0;
 	    int wholeIndex = 0;
-	    // As long as neither the left nor the right ArrayList has
-	    // been used up, keep taking the smaller of left.get(leftIndex)
-	    // or right.get(rightIndex) and adding it at both.get(bothIndex).
 	    while (leftIndex < left.size() && rightIndex < right.size()) {
 	        if ((left.get(leftIndex).compareTo(right.get(rightIndex))) < 0) {
 	            whole.set(wholeIndex, left.get(leftIndex));
@@ -184,15 +233,12 @@ public class Table {
 	    ArrayList<Integer> rest;
 	    int restIndex;
 	    if (leftIndex >= left.size()) {
-	        // The left ArrayList has been use up...
 	        rest = right;
 	        restIndex = rightIndex;
 	    } else {
-	        // The right ArrayList has been used up...
 	        rest = left;
 	        restIndex = leftIndex;
 	    }
-	    // Copy the rest of whichever ArrayList (left or right) was not used up.
 	    for (int i=restIndex; i<rest.size(); i++) {
 	        whole.set(wholeIndex, rest.get(i));
 	        wholeIndex++;
@@ -336,29 +382,43 @@ public class Table {
 	        wholeIndex++;
 	    }
 	}
-
+	
+	/**
+	 * if a select is distinct this method filters out all the rows which do not have distinct values
+	 * @param selectedColumns
+	 * @param returnedRows
+	 * @return
+	 */
 	public List<Row> distinct(ArrayList<ColumnDescription> selectedColumns, List<Row> returnedRows) {
 		for(ColumnDescription cd: selectedColumns) {
-			for(Row row : returnedRows) {
+			for(Row row : returnedRows) {//adds the values selected onto a string to ensure only nondistinct combinations of 
+				//column values are filtered out and not merely values
 				int index = returnedRows.get(0).findColumnIndex(cd.getColumnName());
 				row.selectString = row.selectString + row.rowEntries[index].value;
 			}
 		}
-		for(int i = 0; i < returnedRows.size(); i++) {
-			for(int j = returnedRows.size() -1; j > i; j--) {
-				if(returnedRows.get(i).selectString.equals(returnedRows.get(j).selectString)) {
-					returnedRows.remove(j);
+		ArrayList<Row> distinct = new ArrayList<Row>(returnedRows);
+		for(int i = 0; i < distinct.size(); i++) {
+			for(int j = distinct.size() -1; j > i; j--) {
+				if(distinct.get(i).selectString.equals(distinct.get(j).selectString)) {
+					distinct.remove(j);
 				}
 			}
 		}
-		return returnedRows;
+		return distinct;
 	}
-
+	
+	/**
+	 * extends the columns with only one function value to the length of all the other columns
+	 * @param allSelectColumns
+	 * @return
+	 */
 	public ArrayList<SelectColumn> extendFunctionColumns(List<SelectColumn> allSelectColumns) {
 		int maxLength = 0;
 		for(SelectColumn column : allSelectColumns) {
-			if(column.getSelectColumn().size() > maxLength) {
+			if(!column.hasFunction()) {
 				maxLength = column.getSelectColumn().size();
+				break;
 			}
 		}
 		if(maxLength > 1) {
@@ -373,7 +433,13 @@ public class Table {
 		}
 		return (ArrayList<SelectColumn>) allSelectColumns;
 	}
-
+	
+	
+	/**
+	 * Returns an arraylist of column descriptions requested in the select query
+	 * @param SQ
+	 * @return an arraylist of column descriptions
+	 */
 	public ArrayList<ColumnDescription> addSelectedColumns(SelectQuery SQ) {
 		ArrayList<ColumnDescription> selectedColumns = null;
 		if (SQ.getSelectedColumnNames().length == 1 && SQ.getSelectedColumnNames()[0].getColumnName().equals("*")) {
@@ -387,7 +453,13 @@ public class Table {
 		}
 		return selectedColumns;
 	}
-
+	
+	/**
+	 * This takes in a list of rows and removes the rows which do not meet the where condition
+	 * @param SQ
+	 * @param selectedColumns
+	 * @return a list of rows which satisfy the where condition
+	 */
 	public List<Row> addSelectRows(SelectQuery SQ, ArrayList<ColumnDescription> selectedColumns) {
 		ArrayList<Row> returnedRows = null;
 		try {
@@ -395,13 +467,82 @@ public class Table {
 			for(int i = 0; i < selectedColumns.size(); i++) {
 				tempCDS[i] = selectedColumns.get(i);
 			}
-			Where where = new Where(tempCDS);
+			Where where = new Where(tempCDS, this.columns, SQ, this.indexedColumns);
 			List<Row> temp = new ArrayList<Row>(this.rows);
 			returnedRows = where.where((ArrayList<Row>) temp, SQ.getWhereCondition());	
 		}
 		catch(NullPointerException e) {
 			returnedRows = (ArrayList<Row>) this.rows;
 		}
+		if(SQ.isDistinct()) {
+			returnedRows = (ArrayList<Row>) this.distinct(selectedColumns, returnedRows);
+		}
 		return returnedRows;
 	}
+	
+	/**
+	 * deletes the given rows from a table
+	 * @param returnedRows
+	 */
+	public void deleteRows(List<Row> returnedRows) {
+		List<Integer> indecesToBeDeleted = new ArrayList<Integer>();
+		for (Row row : returnedRows) {
+			indecesToBeDeleted.add(this.findIndex(row));
+		}
+		if(indecesToBeDeleted.size() > 1) {
+			indecesToBeDeleted = this.sortIntegers((ArrayList<Integer>) indecesToBeDeleted);
+		}
+		int size = indecesToBeDeleted.size() - 1;
+		for (int j = size; j >= 0; j--) {
+			int index = indecesToBeDeleted.get(j);
+			this.rows.remove(index);
+		}
+	}
+	
+	/**
+	 * This method creates selectColumns from the select query, which are added to a list and returned
+	 * @param SQ
+	 * @param returnedRows
+	 * @param selectedColumns
+	 * @param columnIDs
+	 * @return a list of selected columns
+	 */
+	public List<SelectColumn> gatherSelectColumns(SelectQuery SQ, List<Row> returnedRows, ArrayList<ColumnDescription> selectedColumns, ColumnID[] columnIDs) {
+		List<SelectColumn> allSelectColumns = new ArrayList<SelectColumn>();
+		if (!(SQ.getSelectedColumnNames().length == 1 && SQ.getSelectedColumnNames()[0].getColumnName().equals("*"))) {
+			int iterator = 0;
+			for(ColumnDescription cd : selectedColumns) {
+				SelectColumn selectColumn = new SelectColumn(returnedRows, cd, cd.getColumnName(), SQ.getOrderBys(), columnIDs[iterator]);
+				allSelectColumns.add(selectColumn);
+				iterator++;
+			}
+		}
+		else {
+			for(ColumnDescription cd : selectedColumns) {
+				SelectColumn selectColumn = new SelectColumn(returnedRows, cd, cd.getColumnName(), SQ.getFunctions(), SQ.getOrderBys());
+				allSelectColumns.add(selectColumn);
+			}
+		}
+		return allSelectColumns;
+	}
+	
+	/**
+	 * performs the functions on the columns they are supposed to be performed on
+	 * @param SQ
+	 * @param allSelectColumns
+	 * @return
+	 */
+	public List<SelectColumn> performFunctions(SelectQuery SQ, List<SelectColumn> allSelectColumns) {
+		for(SelectColumn SC : allSelectColumns) {
+			for(FunctionInstance func : SQ.getFunctions()) {
+				if (SC.getColumnID() == func.column){
+					SC.performFunction(func);
+					SC.setIndividualfunction(func);
+				}
+			}
+		}
+		allSelectColumns = this.extendFunctionColumns(allSelectColumns);
+		return allSelectColumns;
+	}
+
 }

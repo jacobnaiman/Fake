@@ -11,21 +11,40 @@ public class DataEntry {
 	public String value;
 	public String columnName;
 	
+	/**
+	 * constructs a data entry from a column value pair
+	 * @param colValPair
+	 */
 	public DataEntry(ColumnValuePair colValPair) {
 		this.value = colValPair.getValue();
 		this.columnName = colValPair.getColumnID().getColumnName();
 	}
 	
+	/**
+	 * Constructs a data entry and sets the value to the default if there is one
+	 * @param defaultValue
+	 * @param cd
+	 */
 	public DataEntry(String defaultValue, ColumnDescription cd) {
 		this.value = defaultValue;
-		this.columnName = cd.getColumnName();
+		if(cd != null ) {
+			this.columnName = cd.getColumnName();
+		}
 	}
-
+	
+	/**
+	 * This method checks that the data entry fits with the conditions of its column
+	 * @param columnDescription
+	 */
 	public void performValueChecks(ColumnDescription columnDescription) {
 		this.dataTypeCheck(columnDescription.getColumnType());
 		this.isRightLength(columnDescription);
 	}
 	
+	/**
+	 * Ensures a value is of the proper data type
+	 * @param columnType
+	 */
 	public void dataTypeCheck(DataType columnType) {
 		String value = this.value;
 		try {
@@ -45,6 +64,10 @@ public class DataEntry {
 		}
 	}
 	
+	/**
+	 * This method ensures that varchars, integers, and decimals are not longer than the specified length
+	 * @param columnDescription
+	 */
 	public void isRightLength(ColumnDescription columnDescription) {
 		String value = this.value;
 		if (columnDescription.getColumnType().equals(DataType.INT)) {
